@@ -8,11 +8,11 @@ class YinYangSolver {
     private static final int EMPTY = 0;
     
     // Parameter genetik algoritma
-    private static final int POPULATION_SIZE = 100;
-    private static final int MAX_GENERATIONS = 1000;
+    private static final int POPULATION_SIZE = 1000;
+    private static final int MAX_GENERATIONS = 100000;
     private static final double MUTATION_RATE = 0.1;
     private static final double CROSSOVER_RATE = 0.8;
-    private static final int STAGNATION_LIMIT = 100;
+    private static final int STAGNATION_LIMIT = 1000;
     
     private static int stagnationCounter = 0;
     private static int lastBestFitness = Integer.MAX_VALUE;
