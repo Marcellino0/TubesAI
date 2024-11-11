@@ -1,35 +1,39 @@
+package yinyang;
+
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
+        
         System.out.print("Masukkan ukuran puzzle (n x n): ");
         int size = scanner.nextInt();
-        scanner.nextLine(); // Membersihkan buffer scanner
-
-        int[][] initialBoard = new int[size][size];
-
-        System.out.println("\nMasukkan papan puzzle dalam bentuk array 2 dimensi (gunakan spasi untuk pemisah nilai, dan enter untuk baris baru):");
-
-
-        for (int i = 0; i < size; i++) {
-            String[] row = scanner.nextLine().split(" ");
-            for (int j = 0; j < size; j++) {
-                initialBoard[i][j] = Integer.parseInt(row[j]);
-            }
-        }
-
-        PuzzleBoard puzzleBoard = new PuzzleBoard(initialBoard);
-        System.out.println("\nPapan Awal:");
-        puzzleBoard.printBoard();
-
+        
+        // Generate kondisi awal secara random
+        System.out.println("\nMenghasilkan kondisi awal puzzle secara random...");
+        Board initialBoard = RandomBoardGenerator.generate(size);
+        
+        System.out.println("\nKondisi awal puzzle (generated):");
+        BoardPrinter.printBoard(initialBoard);
+        
+        // Solve puzzle
         System.out.println("\nMencari solusi...");
-        YinYangSolver solver = new YinYangSolver();
-        int[][] solution = solver.solve(initialBoard);
-
-        System.out.println("\nPapan Solusi:");
-        PuzzleBoard solutionBoard = new PuzzleBoard(solution);
-        solutionBoard.printBoard();
+        long startTime = System.currentTimeMillis();
+        
+        GeneticSolver solver = new GeneticSolver(initialBoard);
+        Board solution = solver.solve();
+        
+        long endTime = System.currentTimeMillis();
+        System.out.println("\nSolusi ditemukan dalam " + (endTime - startTime) + "ms");
+        
+        // Tampilkan solusi
+        System.out.println("\nSolusi:");
+        BoardPrinter.printBoard(solution);
+        
+        // Validasi solusi
+        boolean isValid = YinYangValidator.isValid(solution);
+        System.out.println("\nSolusi " + (isValid ? "valid" : "tidak valid"));
+        
+        scanner.close();
     }
 }
