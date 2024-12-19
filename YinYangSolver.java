@@ -99,7 +99,7 @@ class YinYangSolver {
     //ubah parameter genetik di sini gus
     private static void adjustParameters(int size) {
         POPULATION_SIZE = size * size * 20;
-        MAX_GENERATIONS = size * size * size * 50;
+        MAX_GENERATIONS = size * size * size * 2;
         MUTATION_RATE = 0.1 + (0.5 / size);
         CROSSOVER_RATE = 0.8;
         STAGNATION_LIMIT = size * 100;
