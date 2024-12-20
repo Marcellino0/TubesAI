@@ -98,11 +98,11 @@ class YinYangSolver {
 
     //ubah parameter genetik di sini gus
     private static void adjustParameters(int size) {
-        POPULATION_SIZE = size * size * 100;
-        MAX_GENERATIONS = size * size * size * 50;
-        MUTATION_RATE = 0.05 + (0.4 / size);
-        CROSSOVER_RATE = 0.8;
-        STAGNATION_LIMIT = size * 100;
+        POPULATION_SIZE = 15000;
+        MAX_GENERATIONS = 10000;
+        MUTATION_RATE = 0.01;
+        CROSSOVER_RATE = 0.53;
+        STAGNATION_LIMIT = 1000;
     }
     
     private static List<Individual> initializePopulation(int[][] initialBoard) {
