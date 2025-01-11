@@ -1,3 +1,7 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class YinYangSolver {
@@ -14,11 +18,12 @@ public class YinYangSolver {
     private static final int RESTART_THRESHOLD = 200;
     private static final int MAX_TIME_SECONDS = 30000;
 
-    // Variables for statistics
+    // Variables for statistics and state
     private static int totalAttempts = 0;
     private static long startExecutionTime;
-
-    private static Random random = new Random();
+    private static long currentSeed;  // Added this declaration
+    private static Random random;
+    private static int[][] initialBoard;
 
     static class Individual implements Comparable<Individual> {
         int[][] board;
@@ -41,8 +46,6 @@ public class YinYangSolver {
         }
     }
 
-    private static int[][] initialBoard;
-
     private static void resetStatistics() {
         totalAttempts = 0;
         startExecutionTime = System.currentTimeMillis();
@@ -64,7 +67,9 @@ public class YinYangSolver {
         return 1.0 - (double) violations / totalCells;
     }
 
-    public static int[][] solve(int[][] board) {
+    public static int[][] solve(int[][] board, long seed) {
+        currentSeed = seed;
+        random = new Random(currentSeed);
         resetStatistics();
 
         adjustParameters(board.length);
@@ -80,7 +85,9 @@ public class YinYangSolver {
             Individual solution = runGeneticAlgorithm(startTime);
 
             if (solution.fitness == 0) {
+                System.out.println("Solution found with seed: " + currentSeed);
                 printStatistics(solution);
+                saveSolution(solution.board, currentSeed);
                 return solution.board;
             }
 
@@ -90,8 +97,9 @@ public class YinYangSolver {
             }
         }
 
-        System.out.println("Time limit reached. Returning best solution found.");
+        System.out.println("Time limit reached. Returning best solution found with seed: " + currentSeed);
         printStatistics(bestSolutionEver);
+        saveSolution(bestSolutionEver.board, currentSeed);
         return bestSolutionEver.board;
     }
 
@@ -174,7 +182,7 @@ public class YinYangSolver {
         POPULATION_SIZE = size * size * 50;
         MAX_GENERATIONS = 2000;
         MUTATION_RATE = 0.9;
-        CROSSOVER_RATE = 0.9;
+        CROSSOVER_RATE = 0.16;
         TOURNAMENT_SIZE = POPULATION_SIZE / 100;
         ELITISM_COUNT = POPULATION_SIZE / 20;
 
@@ -370,5 +378,40 @@ public class YinYangSolver {
         } while (improved);
 
         individual.fitness = calculateFitness(individual.board);
+    }
+
+    private static void saveSolution(int[][] solution, long seed) {
+        try {
+            File file = new File("solutions.txt");
+            FileWriter fw = new FileWriter(file, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            
+            // Format: seed:size,board_values_comma_separated
+            StringBuilder sb = new StringBuilder();
+            sb.append(seed).append(":");
+            sb.append(solution.length).append(",");
+            
+            for (int i = 0; i < solution.length; i++) {
+                for (int j = 0; j < solution.length; j++) {
+                    sb.append(solution[i][j]);
+                    if (!(i == solution.length-1 && j == solution.length-1)) {
+                        sb.append(",");
+                    }
+                }
+            }
+            
+            bw.write(sb.toString());
+            bw.newLine();
+            bw.close();
+            
+            System.out.println("Solusi disimpan dengan seed: " + seed);
+        } catch (IOException e) {
+            System.out.println("Error menyimpan solusi: " + e.getMessage());
+        }
+    }
+
+    public static int[][] solve(int[][] board) {
+        long seed = System.currentTimeMillis();
+        return solve(board, seed);
     }
 }
